@@ -1,5 +1,6 @@
 <launch>
-  <node pkg="gaze_visualizer" type="rviz_marker_node.py" name="gaze_visualizer" output="screen" />
+  <node pkg="gaze_visualizer" type="rviz_marker_node.py" name="gaze_visualizer" output="screen"/>
+  <node pkg="gaze_visualizer" type="entropy_text_node.py" name="entropy_text" output="screen"/>
+  <node pkg="gaze_visualizer" type="entropy_history_node.py" name="entropy_history_node" output="screen"/>
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find gaze_visualizer)/config/marker_view.rviz"/>
 </launch>
-
