@@ -10,6 +10,7 @@ from std_msgs.msg import Bool
 # ROS node
 rospy.init_node('target_hit_game_node')
 pub = rospy.Publisher('/target_hit', Bool, queue_size=10)
+entropy_pub = rospy.Publisher('/start_entropy', Bool, queue_size=1)
 
 # Pygame setup
 pygame.init()
@@ -37,7 +38,7 @@ result_dir = f"/home/ros/eyegaze_ws/results/target_game_result/session_{timestam
 os.makedirs(result_dir, exist_ok=True)
 
 # Entropy signal
-entropy_pub = rospy.Publisher('/start_entropy', Bool, queue_size=1)
+rospy.set_param("/current_game_type", "target")   # Start entropy tracking
 entropy_pub.publish(True)  # Signal to begin entropy calc
 
 running = True
@@ -81,8 +82,8 @@ while running and not rospy.is_shutdown():
         running = False
 
 # End game
-entropy_pub.publish(False)  # Signal to end entropy calc
 pygame.quit()
+entropy_pub.publish(False)  # Signal to end entropy calc
 
 # Save result
 with open(os.path.join(result_dir, "summary.txt"), "w") as f:

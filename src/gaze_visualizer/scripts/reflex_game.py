@@ -34,6 +34,7 @@ result_dir = f"/home/ros/eyegaze_ws/results/reflex_game_result/session_{timestam
 os.makedirs(result_dir, exist_ok=True)
 
 # Start entropy tracking
+rospy.set_param("/current_game_type", "reflex")
 entropy_pub.publish(True)
 
 running = True
