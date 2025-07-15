@@ -1,0 +1,2 @@
+entropy_calc_node:estimation_error_node:gaze_visualizer
+-DCATKIN_DEVEL_PREFIX=/home/ros/eyegaze_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ros/eyegaze_ws/install -G Unix Makefiles

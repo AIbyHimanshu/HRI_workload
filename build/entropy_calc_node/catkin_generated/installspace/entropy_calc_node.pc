@@ -1,0 +1,8 @@
+prefix=/home/ros/eyegaze_ws/install
+
+Name: entropy_calc_node
+Description: Description of entropy_calc_node
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

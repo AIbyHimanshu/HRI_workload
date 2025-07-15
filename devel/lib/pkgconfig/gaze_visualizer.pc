@@ -1,0 +1,8 @@
+prefix=/home/ros/eyegaze_ws/devel
+
+Name: gaze_visualizer
+Description: Description of gaze_visualizer
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

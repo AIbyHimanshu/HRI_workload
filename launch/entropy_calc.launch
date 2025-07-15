@@ -1,0 +1,5 @@
+
+<launch>
+  <node pkg="entropy_calc_node" type="entropy_publisher.py" name="entropy_calc" output="screen" />
+</launch>
+

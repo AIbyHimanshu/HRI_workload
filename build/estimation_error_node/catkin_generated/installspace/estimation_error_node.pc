@@ -1,0 +1,8 @@
+prefix=/home/ros/eyegaze_ws/install
+
+Name: estimation_error_node
+Description: Description of estimation_error_node
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
