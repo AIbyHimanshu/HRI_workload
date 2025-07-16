@@ -1,0 +1,5 @@
+Cue,Response,Correct,Reaction Time,Game Time
+left,none,False,N/A,1.03
+right,left,False,1.026,4.05
+right,left,False,1.026,7.06
+left,none,False,N/A,10.07
