@@ -110,8 +110,8 @@ while running and not rospy.is_shutdown():
         response_logged = True
 
     # === Overlay Entropy ===
-    entropy_text = font.render(f"Entropy: {latest_entropy:.2f}", True, (0, 255, 255))
-    win.blit(entropy_text, (10, 10))
+    #entropy_text = font.render(f"Entropy: {latest_entropy:.2f}", True, (0, 255, 255))
+    #win.blit(entropy_text, (10, 10))
 
     pygame.display.update()
     clock.tick(30)
