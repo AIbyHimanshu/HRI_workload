@@ -6,6 +6,7 @@ import random
 import time
 import os
 import threading
+import math
 from std_msgs.msg import Bool, Float32
 
 # === Setup ROS Node ===
@@ -20,28 +21,43 @@ def entropy_cb(msg):
     global latest_entropy
     latest_entropy = msg.data
 
-# Use separate thread to not block rospy callbacks
 rospy.Subscriber("/calculated_entropy", Float32, entropy_cb)
 
 # === Pygame Setup ===
 pygame.init()
 width, height = 800, 500
 win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("HRT Entropy Game")
+pygame.display.set_caption("HRT Shape Game")
 font = pygame.font.Font(None, 36)
 clock = pygame.time.Clock()
 
 # === Game Params ===
 duration = 60
-cue_interval = 2
-reaction_window = 1.0  # seconds
+cue_interval = 1
+reaction_window = 1.5
 cue = None
 cue_start = None
 response_logged = False
 response = "none"
 responses = []
 correct_hits = 0
+wrong_hits = 0
+missed_hits = 0
 total_cues = 0
+
+# === Countdown ===
+for i in reversed(range(1, 4)):
+    win.fill((0, 0, 0))
+    text = font.render(f"Starting in {i}...", True, (255, 255, 255))
+    win.blit(text, (width // 2 - 100, height // 2 - 20))
+    pygame.display.update()
+    time.sleep(1)
+
+win.fill((0, 0, 0))
+text = font.render("Go!", True, (0, 255, 0))
+win.blit(text, (width // 2 - 40, height // 2 - 20))
+pygame.display.update()
+time.sleep(1)
 
 # === Session Folders ===
 timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -60,30 +76,28 @@ while running and not rospy.is_shutdown():
 
     # === Draw cue ===
     if cue is None and now >= next_cue_time:
-        cue = random.choice(["left", "right"])
+        cue = random.choice(["circle", "square", "triangle", "hexagon"])
         cue_start = now
+        cue_x = random.randint(100, width - 100)
+        cue_y = random.randint(100, height - 100)
         response = "none"
         response_logged = False
         total_cues += 1
         next_cue_time = now + cue_interval
 
     if cue:
-        center_y = height // 2
-        if cue == "left":
+        if cue == "circle":
+            pygame.draw.circle(win, (0, 255, 255), (cue_x, cue_y), 40)
+        elif cue == "square":
+            pygame.draw.rect(win, (255, 255, 0), pygame.Rect(cue_x - 40, cue_y - 40, 80, 80))
+        elif cue == "triangle":
+            pygame.draw.polygon(win, (255, 0, 255), [(cue_x, cue_y - 40), (cue_x - 40, cue_y + 40), (cue_x + 40, cue_y + 40)])
+        elif cue == "hexagon":
             points = [
-                (220, center_y),
-                (270, center_y - 30), (270, center_y - 10),
-                (330, center_y - 10), (330, center_y + 10),
-                (270, center_y + 10), (270, center_y + 30)
+                (cue_x + 40 * math.cos(a), cue_y + 40 * math.sin(a))
+                for a in [i * math.pi / 3 for i in range(6)]
             ]
-        else:
-            points = [
-                (420, center_y),
-                (370, center_y - 30), (370, center_y - 10),
-                (310, center_y - 10), (310, center_y + 10),
-                (370, center_y + 10), (370, center_y + 30)
-            ]
-        pygame.draw.polygon(win, (255, 255, 0), points)
+            pygame.draw.polygon(win, (0, 255, 0), points)
 
     # === Handle input ===
     for event in pygame.event.get():
@@ -96,22 +110,22 @@ while running and not rospy.is_shutdown():
                 response = "right"
 
             rt = round(now - cue_start, 3)
-            correct = (response == cue)
+            is_edge = cue in ["square", "triangle", "hexagon"]
+            correct = (response == "right" if is_edge else response == "left")
             responses.append((cue, response, correct, rt, round(now - start_time, 2)))
             if correct:
                 correct_hits += 1
+            else:
+                wrong_hits += 1
             cue = None
             response_logged = True
 
     # === Timeout ===
     if cue and (now - cue_start > reaction_window) and not response_logged:
         responses.append((cue, "none", False, "N/A", round(now - start_time, 2)))
+        missed_hits += 1
         cue = None
         response_logged = True
-
-    # === Overlay Entropy ===
-    #entropy_text = font.render(f"Entropy: {latest_entropy:.2f}", True, (0, 255, 255))
-    #win.blit(entropy_text, (10, 10))
 
     pygame.display.update()
     clock.tick(30)
@@ -134,6 +148,8 @@ with open(os.path.join(result_dir, "summary.txt"), "w") as f:
     f.write(f"Session time: {duration} seconds\n")
     f.write(f"Total cues: {total_cues}\n")
     f.write(f"Correct responses: {correct_hits}\n")
+    f.write(f"Wrong responses: {wrong_hits}\n")
+    f.write(f"Missed responses: {missed_hits}\n")
 
-print("\n✅ HRT Visual Game Ended")
-print(f"📁 Saved results to: {result_dir}")
+print("\n HRT Visual Game Ended")
+print(f"Saved results to: {result_dir}")
