@@ -28,10 +28,10 @@ pygame.joystick.init()
 if pygame.joystick.get_count() > 0:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-    print("🕹️ Joystick detected: ", joystick.get_name())
+    print(" Joystick detected: ", joystick.get_name())
 else:
     joystick = None
-    print("⚠️ No joystick/game controller detected. Keyboard fallback enabled.")
+    print("No joystick/game controller detected. Keyboard fallback enabled.")
 
 # Maze params
 cols, rows = 20, 15
@@ -41,7 +41,6 @@ visited = [[False for _ in range(cols)] for _ in range(rows)]
 
 # Track history
 visited_paths = []
-
 
 def generate_maze(x, y):
     visited[y][x] = True
@@ -77,7 +76,7 @@ def pick_valid_target():
             return tx, ty
 
 # Game state
-duration = 300  # 5 minutes
+duration = 120  # 2 minutes
 
 # Results path
 timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -96,7 +95,6 @@ text = font.render("GO!", True, (0, 255, 0))
 win.fill((0, 0, 0))
 win.blit(text, (width // 2 - 30, height // 2 - 10))
 pygame.display.update()
-    
 time.sleep(1)
 
 # Init
@@ -156,13 +154,18 @@ while running and not rospy.is_shutdown():
             py = player_y * cell_size + cell_size // 2
             current_segment.append((time.time() - segment_start_time, px, py))
 
+    # Clear previous segment path after reaching goal
+    if len(current_segment) > 1:
+        for i in range(1, len(current_segment)):
+            pygame.draw.line(win, (0, 100, 255), (current_segment[i-1][1], current_segment[i-1][2]), (current_segment[i][1], current_segment[i][2]), 2)
+
     pygame.draw.circle(win, (255, 0, 0), (target_x * cell_size + cell_size // 2, target_y * cell_size + cell_size // 2), 12)
     pygame.draw.circle(win, (0, 255, 0), (player_x * cell_size + cell_size // 2, player_y * cell_size + cell_size // 2), 8)
 
     if player_x == target_x and player_y == target_y:
         pub.publish(True)
         goals_reached += 1
-        segment_paths.append((segment_start_time, time.time(), current_segment))
+        segment_paths.append((segment_start_time, time.time(), list(current_segment)))
         current_segment = []
         segment_start_time = time.time()
         target_x, target_y = pick_valid_target()
@@ -183,9 +186,11 @@ with open(os.path.join(result_dir, "summary.txt"), "w") as f:
 
 with open(os.path.join(result_dir, "path_trace.csv"), "w", newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(["Segment Start", "Segment End", "Time", "x", "y"])
-    for start, end, segment in segment_paths:
+    for idx, (start, end, segment) in enumerate(segment_paths, 1):
+        writer.writerow([f"=== Segment {idx} Start: {time.strftime('%H:%M:%S', time.localtime(start))} | End: {time.strftime('%H:%M:%S', time.localtime(end))} ==="])
+        writer.writerow(["Time (s)", "x", "y"])
         for t, x, y in segment:
-            writer.writerow([time.strftime('%H:%M:%S', time.localtime(start)), time.strftime('%H:%M:%S', time.localtime(end)), round(t, 2), x, y])
+            writer.writerow([round(t, 2), x, y])
+        writer.writerow([])
 
-print(f"\n\U0001F3C1 Maze Game Ended\n\U0001F4C1 Saved results to: {result_dir}")
+print(f"\n Maze Game Ended\nSaved results to: {result_dir}")
