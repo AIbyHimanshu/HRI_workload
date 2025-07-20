@@ -7,6 +7,7 @@ import time
 import os
 import csv
 import math
+import matplotlib.pyplot as plt
 from std_msgs.msg import Bool
 from collections import deque
 
@@ -28,10 +29,10 @@ pygame.joystick.init()
 if pygame.joystick.get_count() > 0:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-    print(" Joystick detected: ", joystick.get_name())
+    print("🕹️ Joystick detected: ", joystick.get_name())
 else:
     joystick = None
-    print("No joystick/game controller detected. Keyboard fallback enabled.")
+    print("⚠️ No joystick/game controller detected. Keyboard fallback enabled.")
 
 # Maze params
 cols, rows = 20, 15
@@ -76,7 +77,7 @@ def pick_valid_target():
             return tx, ty
 
 # Game state
-duration = 120  # 2 minutes
+duration = 150  # 2.5 minutes
 
 # Results path
 timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -154,7 +155,6 @@ while running and not rospy.is_shutdown():
             py = player_y * cell_size + cell_size // 2
             current_segment.append((time.time() - segment_start_time, px, py))
 
-    # Clear previous segment path after reaching goal
     if len(current_segment) > 1:
         for i in range(1, len(current_segment)):
             pygame.draw.line(win, (0, 100, 255), (current_segment[i-1][1], current_segment[i-1][2]), (current_segment[i][1], current_segment[i][2]), 2)
@@ -192,5 +192,20 @@ with open(os.path.join(result_dir, "path_trace.csv"), "w", newline='') as f:
         for t, x, y in segment:
             writer.writerow([round(t, 2), x, y])
         writer.writerow([])
+
+# Auto-generate trajectory plot
+plt.figure(figsize=(10, 6))
+for idx, (_, _, segment) in enumerate(segment_paths, 1):
+    xs = [x for _, x, _ in segment]
+    ys = [y for _, _, y in segment]
+    plt.plot(xs, ys, label=f'Segment {idx}')
+
+plt.title("Trajectory Paths")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.legend()
+plt.grid(True)
+plt.savefig(os.path.join(result_dir, "trajectories_plot.png"))
+plt.close()
 
 print(f"\n Maze Game Ended\nSaved results to: {result_dir}")
