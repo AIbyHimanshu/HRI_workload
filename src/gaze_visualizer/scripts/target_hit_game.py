@@ -14,7 +14,7 @@ entropy_pub = rospy.Publisher('/start_entropy', Bool, queue_size=1)
 
 # Pygame setup
 pygame.init()
-width, height = 600, 400
+width, height = 1000, 600
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Target Tracking Game")
 
@@ -28,7 +28,7 @@ gaze_pos = [width // 2, height // 2]
 
 # Game control
 start_time = time.time()
-duration = 30  # seconds
+duration = 60  # seconds
 hits = 0
 overlap_frames = 0
 

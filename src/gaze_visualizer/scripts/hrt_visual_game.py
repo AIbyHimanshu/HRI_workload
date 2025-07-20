@@ -25,16 +25,16 @@ rospy.Subscriber("/calculated_entropy", Float32, entropy_cb)
 
 # === Pygame Setup ===
 pygame.init()
-width, height = 640, 360
+width, height = 800, 500
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("HRT Entropy Game")
 font = pygame.font.Font(None, 36)
 clock = pygame.time.Clock()
 
 # === Game Params ===
-duration = 30
-cue_interval = 3
-reaction_window = 2.0  # seconds
+duration = 60
+cue_interval = 2
+reaction_window = 1.0  # seconds
 cue = None
 cue_start = None
 response_logged = False
