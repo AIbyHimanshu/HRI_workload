@@ -1,2 +1,0 @@
-Session time: 60 seconds
-Total hits: 10

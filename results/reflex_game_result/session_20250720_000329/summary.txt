@@ -1,3 +1,0 @@
-Session time: 60 seconds
-Total reflex hits correct: 40
-Total reflex hits wrong: 14

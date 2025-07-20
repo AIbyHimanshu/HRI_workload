@@ -1,2 +1,0 @@
-Session time: 300 seconds
-Targets reached: 0

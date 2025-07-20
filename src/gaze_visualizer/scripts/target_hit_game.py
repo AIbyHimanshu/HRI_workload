@@ -10,6 +10,7 @@ import math
 import matplotlib.pyplot as plt
 from std_msgs.msg import Bool
 from collections import deque
+from utils import create_session_folder
 
 # ROS node
 rospy.init_node('target_hit_game_node')
@@ -84,9 +85,13 @@ def pick_valid_target():
 duration = 150  # 2.5 minutes
 
 # Results path
-timestamp = time.strftime("%Y%m%d_%H%M%S")
-result_dir = f"/home/ros/eyegaze_ws/results/target_game_result/session_{timestamp}"
-os.makedirs(result_dir, exist_ok=True)
+#timestamp = time.strftime("%Y%m%d_%H%M%S")
+#result_dir = f"/home/ros/eyegaze_ws/results/target_game_result/session_{timestamp}"
+#os.makedirs(result_dir, exist_ok=True)
+
+# Shared results path from utility
+result_dir = create_session_folder("target")
+rospy.set_param("/current_session_dir", result_dir)
 
 # Countdown
 for i in range(3, 0, -1):

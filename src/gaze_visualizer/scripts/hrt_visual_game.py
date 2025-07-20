@@ -8,6 +8,7 @@ import os
 import threading
 import math
 from std_msgs.msg import Bool, Float32
+from utils import create_session_folder
 
 # === Setup ROS Node ===
 rospy.init_node("hrt_visual_game_node", anonymous=True)
@@ -60,9 +61,13 @@ pygame.display.update()
 time.sleep(1)
 
 # === Session Folders ===
-timestamp = time.strftime("%Y%m%d_%H%M%S")
-result_dir = f"/home/ros/eyegaze_ws/results/hrt_game_result/session_{timestamp}"
-os.makedirs(result_dir, exist_ok=True)
+#timestamp = time.strftime("%Y%m%d_%H%M%S")
+#result_dir = f"/home/ros/eyegaze_ws/results/hrt_game_result/session_{timestamp}"
+#os.makedirs(result_dir, exist_ok=True)
+
+# Shared results path from utility
+result_dir = create_session_folder("hrt")
+rospy.set_param("/current_session_dir", result_dir)
 
 # === Start Game ===
 entropy_pub.publish(True)

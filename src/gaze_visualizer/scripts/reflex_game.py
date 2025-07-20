@@ -6,6 +6,7 @@ import random
 import time
 import os
 from std_msgs.msg import Bool
+from utils import create_session_folder
 
 # Init ROS
 rospy.init_node('reflex_game_node')
@@ -43,9 +44,13 @@ cue_color = None
 color_key_map = {'red': pygame.K_r, 'green': pygame.K_g}
 
 # Folder structure
-timestamp = time.strftime("%Y%m%d_%H%M%S")
-result_dir = f"/home/ros/eyegaze_ws/results/reflex_game_result/session_{timestamp}"
-os.makedirs(result_dir, exist_ok=True)
+#timestamp = time.strftime("%Y%m%d_%H%M%S")
+#result_dir = f"/home/ros/eyegaze_ws/results/reflex_game_result/session_{timestamp}"
+#os.makedirs(result_dir, exist_ok=True)
+
+# Shared results path from utility
+result_dir = create_session_folder("reflex")
+rospy.set_param("/current_session_dir", result_dir)
 
 # Start entropy tracking
 rospy.set_param("/current_game_type", "reflex")

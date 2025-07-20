@@ -20,17 +20,15 @@ def start_cb(msg):
         entropy_data = []
         start_time = time.time()
 
-        game_type = rospy.get_param("/current_game_type", "default")
-        base_dir = f"/home/ros/eyegaze_ws/results/{game_type}_game_result"
+        result_dir = rospy.get_param("/current_session_dir", None)
 
-        # Get latest session folder
-        all_sessions = sorted(os.listdir(base_dir))
-        if all_sessions:
-            log_path = os.path.join(base_dir, all_sessions[-1], "entropy_log.csv")
+        if result_dir:
+            log_path = os.path.join(result_dir, "entropy_log.csv")
         else:
             rospy.logwarn("⚠️ No session directory found. Entropy won't be saved.")
             log_path = None
 
+        game_type = rospy.get_param("/current_game_type", "default")
         rospy.loginfo(f"🟢 Entropy logging started for: {game_type} → {log_path}")
 
     else:

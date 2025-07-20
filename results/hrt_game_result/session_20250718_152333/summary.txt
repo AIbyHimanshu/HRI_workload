@@ -1,3 +1,0 @@
-Session time: 60 seconds
-Total cues: 10
-Correct responses: 3
