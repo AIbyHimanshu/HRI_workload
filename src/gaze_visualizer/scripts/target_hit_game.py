@@ -29,7 +29,7 @@ pygame.joystick.init()
 if pygame.joystick.get_count() > 0:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-    print("🕹️ Joystick detected: ", joystick.get_name())
+    print("Joystick detected: ", joystick.get_name())
 else:
     joystick = None
     print("⚠️ No joystick/game controller detected. Keyboard fallback enabled.")
@@ -43,6 +43,7 @@ visited = [[False for _ in range(cols)] for _ in range(rows)]
 # Track history
 visited_paths = []
 
+
 def generate_maze(x, y):
     visited[y][x] = True
     maze[y][x] = 0
@@ -54,6 +55,7 @@ def generate_maze(x, y):
             maze[y + dy][x + dx] = 0
             generate_maze(nx, ny)
 
+
 # BFS path validation
 def is_reachable(sx, sy, tx, ty):
     visited_bfs = [[False for _ in range(cols)] for _ in range(rows)]
@@ -63,18 +65,20 @@ def is_reachable(sx, sy, tx, ty):
         x, y = queue.popleft()
         if x == tx and y == ty:
             return True
-        for dx, dy in [(0,1),(1,0),(0,-1),(-1,0)]:
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
             nx, ny = x + dx, y + dy
             if 0 <= nx < cols and 0 <= ny < rows and maze[ny][nx] == 0 and not visited_bfs[ny][nx]:
                 visited_bfs[ny][nx] = True
                 queue.append((nx, ny))
     return False
 
+
 def pick_valid_target():
     while True:
         tx, ty = random.randint(0, cols - 1), random.randint(0, rows - 1)
         if maze[ty][tx] == 0 and (tx, ty) != (player_x, player_y) and is_reachable(player_x, player_y, tx, ty):
             return tx, ty
+
 
 # Game state
 duration = 150  # 2.5 minutes
@@ -193,18 +197,33 @@ with open(os.path.join(result_dir, "path_trace.csv"), "w", newline='') as f:
             writer.writerow([round(t, 2), x, y])
         writer.writerow([])
 
-# Auto-generate trajectory plot
-plt.figure(figsize=(10, 6))
+# Auto-generate trajectory plot with maze overlay
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Draw the maze overlay
+for y in range(rows):
+    for x in range(cols):
+        if maze[y][x] == 1:
+            rect = plt.Rectangle((x * cell_size, y * cell_size), cell_size, cell_size, color='gray')
+            ax.add_patch(rect)
+
+# Plot each trajectory segment
 for idx, (_, _, segment) in enumerate(segment_paths, 1):
     xs = [x for _, x, _ in segment]
     ys = [y for _, _, y in segment]
-    plt.plot(xs, ys, label=f'Segment {idx}')
+    ax.plot(xs, ys, label=f'Segment {idx}')
+    if xs and ys:
+        mid = len(xs) // 2
+        ax.text(xs[mid], ys[mid], f'{idx}', fontsize=9, color='black')
 
-plt.title("Trajectory Paths")
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.legend()
-plt.grid(True)
+ax.set_title("Trajectory Paths with Maze")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_xlim(0, cols * cell_size)
+ax.set_ylim(0, rows * cell_size)
+ax.invert_yaxis()
+ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.tight_layout()
 plt.savefig(os.path.join(result_dir, "trajectories_plot.png"))
 plt.close()
 
