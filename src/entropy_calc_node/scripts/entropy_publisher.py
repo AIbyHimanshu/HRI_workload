@@ -10,34 +10,41 @@ active = False
 entropy_data = []
 start_time = None
 log_path = None
+level_header_written = False
 
 def start_cb(msg):
-    global active, start_time, entropy_data, log_path
+    global active, start_time, entropy_data, log_path, level_header_written
 
     if msg.data:
         # Begin new session
         active = True
         entropy_data = []
         start_time = time.time()
+        level_header_written = False  # Reset for new session
 
         result_dir = rospy.get_param("/current_session_dir", None)
+        game_type = rospy.get_param("/current_game_type", "default")
 
         if result_dir:
             log_path = os.path.join(result_dir, "entropy_log.csv")
+
+            # Append level header and column names
+            with open(log_path, 'a') as f:
+                f.write(f"\nLevel: {game_type}\n")
+                f.write("Time,Entropy\n")
+            level_header_written = True
+
+            rospy.loginfo(f"🟢 Entropy logging started for: {game_type} → {log_path}")
         else:
             rospy.logwarn("⚠️ No session directory found. Entropy won't be saved.")
             log_path = None
-
-        game_type = rospy.get_param("/current_game_type", "default")
-        rospy.loginfo(f"🟢 Entropy logging started for: {game_type} → {log_path}")
 
     else:
         # Stop and write to file
         active = False
         if log_path and entropy_data:
-            with open(log_path, "w", newline='') as f:
+            with open(log_path, 'a', newline='') as f:
                 writer = csv.writer(f)
-                writer.writerow(["Time", "Entropy"])
                 writer.writerows(entropy_data)
             rospy.loginfo(f"📁 Entropy log saved to: {log_path}")
         else:
