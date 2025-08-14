@@ -1,0 +1,4 @@
+Time,Shape,Color,PressedKey,Result
+8.52,triangle,orange,LEFT,wrong
+29.57,circle,red,RIGHT,wrong
+31.16,triangle,yellow,LEFT,correct

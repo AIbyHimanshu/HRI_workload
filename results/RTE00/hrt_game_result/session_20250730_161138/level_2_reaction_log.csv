@@ -1,0 +1,17 @@
+Time,Shape,Color,PressedKey,Result
+3.71,square,blue,RIGHT,wrong
+5.2,triangle,grey,RIGHT,correct
+8.29,square,orange,RIGHT,wrong
+11.04,circle,yellow,RIGHT,wrong
+14.22,circle,grey,LEFT,correct
+17.24,circle,grey,LEFT,correct
+20.35,triangle,orange,LEFT,wrong
+21.95,circle,yellow,LEFT,correct
+23.5,square,grey,RIGHT,wrong
+29.6,circle,pink,LEFT,correct
+31.09,triangle,yellow,RIGHT,correct
+37.15,circle,yellow,LEFT,correct
+38.67,triangle,green,RIGHT,correct
+40.25,square,blue,LEFT,wrong
+41.58,circle,white,LEFT,correct
+44.86,triangle,orange,RIGHT,correct

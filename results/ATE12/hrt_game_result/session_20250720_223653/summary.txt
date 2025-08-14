@@ -1,5 +1,0 @@
-Session time: 60 seconds
-Total cues: 59
-Correct responses: 54
-Wrong responses: 5
-Missed responses: 0

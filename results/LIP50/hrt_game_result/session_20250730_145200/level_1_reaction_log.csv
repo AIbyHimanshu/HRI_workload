@@ -1,0 +1,10 @@
+Time,Shape,Color,PressedKey,Result
+3.26,circle,yellow,RIGHT,wrong
+13.13,triangle,yellow,LEFT,correct
+15.84,triangle,yellow,LEFT,correct
+18.86,triangle,yellow,LEFT,correct
+23.46,triangle,yellow,LEFT,correct
+25.02,circle,yellow,LEFT,correct
+34.26,circle,orange,RIGHT,correct
+37.11,circle,orange,RIGHT,correct
+43.47,circle,red,LEFT,wrong
